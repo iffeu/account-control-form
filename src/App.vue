@@ -1,5 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Button from 'primevue/button'
+</script>
 
-<template></template>
+<template>
+  <Button>Verify</Button>
+</template>
 
 <style scoped></style>
