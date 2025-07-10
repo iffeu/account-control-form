@@ -1,3 +1,5 @@
+import { accountSchema } from '@/schemas/Account.schema'
+
 interface AccountBase {
   labels: { text: string }[]
   type: (typeof ACCOUNT_TYPES)[number]
@@ -16,3 +18,7 @@ interface AccountLocal extends AccountBase {
 
 export const ACCOUNT_TYPES = ['local', 'LDAP'] as const
 export type Account = AccountLDAP | AccountLocal
+
+export function isAccount(data: unknown): data is Account {
+  return accountSchema.safeParse(data).success
+}
