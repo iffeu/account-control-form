@@ -3,7 +3,7 @@ import { ACCOUNT_TYPES, type Account } from '@/types/Account'
 import { Form, Field, type FormValidationResult } from 'vee-validate'
 import { computed, useId } from 'vue'
 import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
+import { accountSchema } from '@/schemas/Account.schema'
 
 const { account } = defineProps<{ account: Account }>()
 
@@ -19,26 +19,7 @@ const labels = useId()
 const password = useId()
 const type = useId()
 
-const accountBaseScheme = z.object({
-  labels: z.string().max(50),
-  login: z.string().min(1).max(100),
-})
-
-const LDAPAccountScheme = z.object({
-  ...accountBaseScheme.shape,
-  type: z.literal('LDAP'),
-  password: z.string().transform(() => null),
-})
-
-const localAccountScheme = z.object({
-  ...accountBaseScheme.shape,
-  type: z.literal('local'),
-  password: z.string().min(1).max(100),
-})
-
-const accountScheme = toTypedSchema(
-  z.discriminatedUnion('type', [localAccountScheme, LDAPAccountScheme]),
-)
+const accountScheme = toTypedSchema(accountSchema)
 
 function saveAccount(account: Partial<typeof stringifiedAccount.value>) {
   emit('update', {
