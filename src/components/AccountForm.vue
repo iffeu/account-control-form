@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { ACCOUNT_TYPES } from '@/types/Account'
 import { ref } from 'vue'
 
 const login = ref('')
 const labels = ref('')
 const password = ref('')
 const type = ref('local')
-const types = ['local', 'LDAP']
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const types = ['local', 'LDAP']
       <label for="labels">Метки</label>
       Тип записи
       <InputText id="labels" v-model="labels" aria-describedby="username-help" />
-      <Select v-model="type" :options="types" checkmark />
+      <Select v-model="type" :options="[...ACCOUNT_TYPES]" checkmark />
       <label for="login">Логин</label>
       <InputText id="login" v-model="login" aria-describedby="username-help" />
       <label for="password">Пароль</label>
