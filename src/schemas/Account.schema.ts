@@ -1,20 +1,47 @@
 import * as z from 'zod'
 
-const accountBaseSchema = z.object({
+const stringifiedAccountBaseSchema = z.object({
   labels: z.string().max(50),
   login: z.string().min(1).max(100),
 })
 
-const LDAPAccountSchema = z.object({
-  ...accountBaseSchema.shape,
+const stringifiedLDAPAccountSchema = z.object({
+  ...stringifiedAccountBaseSchema.shape,
   type: z.literal('LDAP'),
   password: z.string().transform(() => null),
 })
 
-const localAccountSchema = z.object({
-  ...accountBaseSchema.shape,
+const stringifiedlocalAccountSchema = z.object({
+  ...stringifiedAccountBaseSchema.shape,
   type: z.literal('local'),
   password: z.string().min(1).max(100),
 })
 
-export const accountSchema = z.discriminatedUnion('type', [localAccountSchema, LDAPAccountSchema])
+export const stringifiedAccountSchema = z.discriminatedUnion('type', [
+  stringifiedlocalAccountSchema,
+  stringifiedLDAPAccountSchema,
+])
+
+const LDAPAccountSchema = stringifiedLDAPAccountSchema.omit({ labels: true }).extend({
+  labels: z
+    .array(
+      z.object({
+        text: z.string(),
+      }),
+    )
+    .transform((arr) => arr.map((s) => s.text).join('; '))
+    .pipe(z.string().max(50)),
+})
+
+const localAccountSchema = stringifiedlocalAccountSchema.omit({ labels: true }).extend({
+  labels: z
+    .array(
+      z.object({
+        text: z.string(),
+      }),
+    )
+    .transform((arr) => arr.map((s) => s.text).join('; '))
+    .pipe(z.string().max(50)),
+})
+
+export const accountSchema = z.discriminatedUnion('type', [LDAPAccountSchema, localAccountSchema])
