@@ -8,7 +8,7 @@ const stringifiedAccountBaseSchema = z.object({
 const stringifiedLDAPAccountSchema = z.object({
   ...stringifiedAccountBaseSchema.shape,
   type: z.literal('LDAP'),
-  password: z.string().transform(() => null),
+  password: z.union([z.string().transform(() => null), z.literal(null)]),
 })
 
 const stringifiedlocalAccountSchema = z.object({
@@ -22,16 +22,19 @@ export const stringifiedAccountSchema = z.discriminatedUnion('type', [
   stringifiedLDAPAccountSchema,
 ])
 
-const LDAPAccountSchema = stringifiedLDAPAccountSchema.omit({ labels: true }).extend({
-  labels: z
-    .array(
-      z.object({
-        text: z.string(),
-      }),
-    )
-    .transform((arr) => arr.map((s) => s.text).join('; '))
-    .pipe(z.string().max(50)),
-})
+const LDAPAccountSchema = stringifiedLDAPAccountSchema
+  .omit({ labels: true, password: true })
+  .extend({
+    labels: z
+      .array(
+        z.object({
+          text: z.string(),
+        }),
+      )
+      .transform((arr) => arr.map((s) => s.text).join('; '))
+      .pipe(z.string().max(50)),
+    password: z.literal(null),
+  })
 
 const localAccountSchema = stringifiedlocalAccountSchema.omit({ labels: true }).extend({
   labels: z
