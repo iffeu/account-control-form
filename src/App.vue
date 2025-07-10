@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import AccountForm from './components/AccountForm.vue'
+import type { Account } from './types/Account'
+
+const account: Account = {
+  labels: [{ text: 'XXX' }, { text: 'YYY' }],
+  type: 'local',
+  login: 'test',
+  password: 'test',
+}
 </script>
 
 <template>
@@ -11,10 +19,10 @@ import AccountForm from './components/AccountForm.vue'
 
   <ul>
     <li>
-      <AccountForm />
+      <AccountForm :account />
     </li>
     <li>
-      <AccountForm />
+      <AccountForm :account />
     </li>
   </ul>
 </template>
