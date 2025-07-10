@@ -40,7 +40,6 @@ const type = useId()
         <InputText :id="login" v-bind="field" aria-describedby="username-help" />
       </Field>
       <Field name="password" v-slot="{ field }">
-        {{ field }}
         <label :for="password">Пароль</label>
         <Password
           :input-id="password"
