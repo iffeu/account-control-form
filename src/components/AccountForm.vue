@@ -1,41 +1,37 @@
 <script setup lang="ts">
-import { ACCOUNT_TYPES, type Account } from '@/types/Account'
+import {
+  ACCOUNT_TYPES,
+  fromPartialStringifiedAccount,
+  toStringifiedAccount,
+  type Account,
+  type StringifiedAccount,
+} from '@/types/Account'
 import { Form, Field, type FormValidationResult } from 'vee-validate'
 import { computed, useId } from 'vue'
 import { toTypedSchema } from '@vee-validate/zod'
-import { accountSchema } from '@/schemas/Account.schema'
+import { stringifiedAccountSchema } from '@/schemas/Account.schema'
 
 const { account } = defineProps<{ account: Account }>()
 
-const emit = defineEmits(['update', 'delete'])
+const emit = defineEmits<{
+  update: [Partial<Account>]
+  delete: []
+}>()
 
-const stringifiedAccount = computed(() => ({
-  ...account,
-  labels: account.labels.map((label) => label.text).join('; '),
-}))
+const stringifiedAccount = computed(() => toStringifiedAccount(account))
 
 const login = useId()
 const labels = useId()
 const password = useId()
 const type = useId()
 
-const accountScheme = toTypedSchema(accountSchema)
+const accountScheme = toTypedSchema(stringifiedAccountSchema)
 
-function saveAccount(account: Partial<typeof stringifiedAccount.value>) {
-  emit('update', {
-    ...account,
-    labels:
-      account.labels
-        ?.split(';')
-        .map((s) => s.trim())
-        .filter((s) => s.length)
-        .map((s) => ({ text: s })) ?? [],
-  })
+function saveAccount(account: Partial<StringifiedAccount>) {
+  emit('update', fromPartialStringifiedAccount(account))
 }
 
-function handleSubmit(
-  form: FormValidationResult<typeof stringifiedAccount.value, typeof stringifiedAccount.value>,
-) {
+function handleSubmit(form: FormValidationResult<StringifiedAccount, StringifiedAccount>) {
   if (form.valid && form.values) {
     void saveAccount(form.values)
   }
