@@ -7,6 +7,8 @@ import * as z from 'zod'
 
 const { account } = defineProps<{ account: Account }>()
 
+const emit = defineEmits(['update', 'delete'])
+
 const stringifiedAccount = computed(() => ({
   ...account,
   labels: account.labels.map((label) => label.text).join('; '),
@@ -38,8 +40,16 @@ const accountScheme = toTypedSchema(
   z.discriminatedUnion('type', [localAccountScheme, LDAPAccountScheme]),
 )
 
-function saveAccount(a: Partial<typeof stringifiedAccount.value>) {
-  console.log(a)
+function saveAccount(account: Partial<typeof stringifiedAccount.value>) {
+  emit('update', {
+    ...account,
+    labels:
+      account.labels
+        ?.split(';')
+        .map((s) => s.trim())
+        .filter((s) => s.length)
+        .map((s) => ({ text: s })) ?? [],
+  })
 }
 
 function handleSubmit(
@@ -109,7 +119,13 @@ function handleSubmit(
         />
       </Field>
     </fieldset>
-    <Button icon="pi pi-trash" variant="text" rounded aria-label="Удалить" />
+    <Button
+      icon="pi pi-trash"
+      variant="text"
+      rounded
+      aria-label="Удалить"
+      @click="emit('delete')"
+    />
   </Form>
 </template>
 
