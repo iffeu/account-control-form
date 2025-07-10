@@ -36,22 +36,21 @@ export const useAccountsStore = () => {
     }
 
     function deleteAccount(index: number) {
-      console.log(index)
       accounts.value = accounts.value?.filter((_, i) => i !== index)
-      console.log(accounts.value)
+      localStorage.setItem('accounts', JSON.stringify(accounts.value))
     }
 
     function updateAccount(index: number, updatedAccount: Partial<Account>) {
       accounts.value = accounts.value?.map((account, i) => {
         if (index === i) {
           const newAccount = { ...account, ...updatedAccount }
-          const newAccountFormFormat = { ...newAccount, labels: newAccount.labels.join('; ') }
-          if (isAccount(newAccountFormFormat)) {
-            return newAccount as Account
+          if (isAccount(newAccount)) {
+            return newAccount
           }
         }
         return account
       })
+      localStorage.setItem('accounts', JSON.stringify(accounts.value))
     }
 
     return {
