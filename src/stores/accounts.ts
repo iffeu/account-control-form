@@ -7,6 +7,13 @@ export const useAccountsStore = () => {
   const innerStore = defineStore('accounts', () => {
     const accounts = ref<Account[]>()
 
+    const defaultAccount = ref<Account>({
+      labels: [],
+      login: '',
+      type: 'local',
+      password: '',
+    })
+
     function loadAccounts() {
       const dataString = localStorage.getItem('accounts') ?? 'null'
       if (isJSONString(dataString)) {
@@ -21,12 +28,7 @@ export const useAccountsStore = () => {
     }
 
     function addAccount() {
-      accounts.value?.push({
-        labels: [],
-        login: '',
-        type: 'local',
-        password: '',
-      })
+      accounts.value?.push({ ...defaultAccount.value })
     }
 
     function removeAccount(login: string) {
@@ -45,7 +47,7 @@ export const useAccountsStore = () => {
       })
     }
 
-    return { accounts, loadAccounts, addAccount, removeAccount, updateAccount }
+    return { accounts, defaultAccount, loadAccounts, addAccount, removeAccount, updateAccount }
   })
 
   const store = innerStore()
