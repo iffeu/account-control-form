@@ -31,7 +31,7 @@ export const useAccountsStore = () => {
       accounts.value?.push({ ...defaultAccount.value })
     }
 
-    function removeAccount(login: string) {
+    function deleteAccount(login: string) {
       accounts.value = accounts.value?.filter((account) => account.login !== login)
     }
 
@@ -47,7 +47,7 @@ export const useAccountsStore = () => {
       })
     }
 
-    return { accounts, defaultAccount, loadAccounts, addAccount, removeAccount, updateAccount }
+    return { accounts, defaultAccount, loadAccounts, addAccount, deleteAccount, updateAccount }
   })
 
   const store = innerStore()
