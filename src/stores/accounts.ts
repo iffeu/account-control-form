@@ -19,7 +19,33 @@ export const useAccountsStore = () => {
 
       localStorage.removeItem('accounts')
     }
-    return { accounts, loadAccounts }
+
+    function addAccount() {
+      accounts.value?.push({
+        labels: [],
+        login: '',
+        type: 'local',
+        password: '',
+      })
+    }
+
+    function removeAccount(login: string) {
+      accounts.value = accounts.value?.filter((account) => account.login !== login)
+    }
+
+    function updateAccount(index: number, updatedAccount: Partial<Account>) {
+      accounts.value = accounts.value?.map((account, i) => {
+        if (index === i) {
+          const newAccount = { ...account, ...updatedAccount }
+          if (isAccount(newAccount)) {
+            return newAccount
+          }
+        }
+        return account
+      })
+    }
+
+    return { accounts, loadAccounts, addAccount, removeAccount, updateAccount }
   })
 
   const store = innerStore()
