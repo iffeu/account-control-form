@@ -4,7 +4,7 @@ import AccountForm from './components/AccountForm.vue'
 
 <template>
   <h2>Учетные записи</h2>
-  <Button icon="pi pi-plus" variant="outlined" aria-label="Filter" />
+  <Button icon="pi pi-plus" variant="outlined" aria-label="Добавить аккаунт" />
   <Message severity="info"
     >Для указания нескольких меток для одной пары логин/пароль используйте разделитель ;</Message
   >
