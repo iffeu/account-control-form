@@ -43,57 +43,73 @@ function handleSubmit(form: FormValidationResult<StringifiedAccount, Stringified
     :initial-values="stringifiedAccount"
     :validation-schema="accountScheme"
     :validate-on-mount="true"
-    v-slot="{ validate }"
+    class="form"
+    v-slot="{ values, validate }"
   >
-    <fieldset>
+    <fieldset class="form__fieldset">
       <legend>Аккаунт</legend>
 
       <Field name="labels" v-slot="{ field, errors }">
-        <label :for="labels">Метки</label>
-        <InputText
-          :id="labels"
-          v-bind="field"
-          @blur="validate().then(handleSubmit)"
-          aria-describedby="username-help"
-          :invalid="!!errors.length"
-        />
+        <IftaLabel class="form__label" variant="on">
+          <InputText
+            class="form__field"
+            :id="labels"
+            v-bind="field"
+            @blur="validate().then(handleSubmit)"
+            aria-describedby="username-help"
+            :invalid="!!errors.length"
+          />
+          <label :for="labels">Метки</label>
+        </IftaLabel>
       </Field>
       <Field name="type" v-slot="{ field, errors }">
-        <label :for="type">Тип записи</label>
-        <Select
-          :input-id="type"
-          :model-value="field.value"
-          :invalid="!!errors.length"
-          @update:model-value="
-            ($event) => {
-              field['onUpdate:modelValue']?.($event)
-              validate().then(handleSubmit)
-            }
-          "
-          :options="[...ACCOUNT_TYPES]"
-          checkmark
-        />
+        <IftaLabel class="form__label" variant="on">
+          <Select
+            :input-id="type"
+            :model-value="field.value"
+            :invalid="!!errors.length"
+            class="form__account-type"
+            @update:model-value="
+              ($event) => {
+                field['onUpdate:modelValue']?.($event)
+                validate().then(handleSubmit)
+              }
+            "
+            :options="[...ACCOUNT_TYPES]"
+            checkmark
+          />
+          <label :for="type">Тип записи</label>
+        </IftaLabel>
       </Field>
       <Field name="login" v-slot="{ field, errors }">
-        <label :for="login">Логин</label>
-        <InputText
-          :id="login"
-          v-bind="field"
-          @blur="validate().then(handleSubmit)"
-          aria-describedby="username-help"
-          :invalid="!!errors.length"
-        />
+        <IftaLabel
+          class="form__label"
+          :class="{ 'form__label--dobule': values['type'] === 'LDAP' }"
+        >
+          <InputText
+            class="form__field"
+            :id="login"
+            v-bind="field"
+            @blur="validate().then(handleSubmit)"
+            aria-describedby="username-help"
+            :invalid="!!errors.length"
+          />
+          <label :for="login">Логин</label>
+        </IftaLabel>
       </Field>
       <Field name="password" v-slot="{ field, errors }" mode="agressive">
-        <label :for="password">Пароль</label>
-        <Password
-          :input-id="password"
-          @blur="validate().then(handleSubmit)"
-          :model-value="field.value"
-          :invalid="!!errors.length"
-          @update:model-value="field['onUpdate:modelValue']"
-          toggleMask
-        />
+        <IftaLabel v-if="values['type'] !== 'LDAP'" class="form__label">
+          <Password
+            class="form__field"
+            :input-id="password"
+            @blur="validate().then(handleSubmit)"
+            :model-value="field.value"
+            :invalid="!!errors.length"
+            @update:model-value="field['onUpdate:modelValue']"
+            toggleMask
+          />
+          <label :for="password">Пароль</label>
+        </IftaLabel>
       </Field>
     </fieldset>
     <Button
@@ -106,4 +122,62 @@ function handleSubmit(form: FormValidationResult<StringifiedAccount, Stringified
   </Form>
 </template>
 
-<style scoped></style>
+<style scoped>
+.form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.form__fieldset {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.form__account-type {
+  min-width: 150px;
+}
+
+.form__label--dobule {
+  grid-column: 3 / 5;
+}
+
+.form__field,
+.form__label,
+.form__account-type,
+:deep(.p-password),
+:deep(.p-password input) {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 150px;
+  min-width: 150px;
+}
+
+@media (width <= 735px) {
+  .form__fieldset {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form__label--dobule {
+    grid-column: 1 / 3;
+  }
+}
+
+@media (width <= 430px) {
+  .form {
+    flex-direction: column;
+  }
+  .form__fieldset {
+    grid-template-columns: 1fr;
+  }
+
+  .form__label--dobule {
+    grid-column: 1 / 2;
+  }
+}
+</style>

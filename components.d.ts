@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AccountForm: typeof import('./src/components/AccountForm.vue')['default']
     Button: typeof import('primevue/button')['default']
+    IftaLabel: typeof import('primevue/iftalabel')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
     Password: typeof import('primevue/password')['default']
